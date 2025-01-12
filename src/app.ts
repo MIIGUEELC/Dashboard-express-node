@@ -1,41 +1,25 @@
 import express from "express";
 import dotenv from 'dotenv';
+import authRoutes from './routes/authRoutes';
+import privatedRoutes from './routes/privateRoutes';
+import publicRoutes from "./routes/publicRoutes";
+import bookingRouter from "./routes/bookingsRoutes"; // Importa bookingRouter
 
 dotenv.config();
 
-
-// Import auth middleware for private routes
-import { authenticateToken } from './middleware/auth';
-
-// Import routes
-import { loginRoute } from './controllers/login.controller';
-import { bookingRoutes } from './routes/booking.routes'
-import { roomRoutes } from './routes/room.routes';
-import { userRoutes } from './routes/user.routes';
-import { contactRoutes } from './routes/contact.routes';
-import { infoController } from "./controllers/information.controller";
-
-export const app = express();
-
+const app = express();
 const port = 3000;
-// Middleware
 
+// Middleware para parsear JSON
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Public routes
-app.get('/', (req, res) => {
-    res.send('API running on root path');
-});
-app.use('/info', infoController);
-app.use('/login', loginRoute);
+// Rutas
+app.use('/api', publicRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/protected', privatedRoutes);
+app.use('/api/bookings', bookingRouter); 
 
-// Private routes with authenticate token
-app.use('/bookings', authenticateToken, bookingRoutes);
-app.use('/rooms', authenticateToken, roomRoutes);
-app.use('/users', authenticateToken, userRoutes);
-app.use('/contacts', authenticateToken, contactRoutes);
-
+// Inicia el servidor
 app.listen(port, () => {
-  console.log(`http://localhost:${port}`)
-})
+    console.log(`http://localhost:${port}`);
+});

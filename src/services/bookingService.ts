@@ -1,74 +1,37 @@
-import { BookingType, BookingTypeID } from '../interfaces/BookingType';
-import { booking } from '../data/bookings';
+import { Booking } from "../interfaces/booking";
+import { bookings as bookingData } from "../data/bookings";
 
-let idCounter = 1;
-const generateId = (): string => (idCounter++).toString();
+let bookings: Booking[] = bookingData;
 
-//let bookings: BookingTypeID[] = [];
-
-let bookings: BookingTypeID[] = [  // pongo esto para probar
-  {
-    id: generateId(),
-    name: "John Doe",
-    photo: "https://randomuser.me/api/portraits/men/1.jpg",
-    check_in: "2025-01-15",
-    check_out: "2025-01-20",
-    room: 101,
-    price: 500,
-    status: "Paid",
-    requests: "Extra pillows",
-    booking_date: "2025-01-10",
-  },
-  {
-    id: generateId(),
-    name: "Jane Smith",
-    photo: "https://randomuser.me/api/portraits/women/2.jpg",
-    check_in: "2025-01-10",
-    check_out: "2025-01-12",
-    room: 102,
-    price: 300,
-    status: "Pending",
-    requests: "No dairy",
-    booking_date: "2025-01-05",
-  },
-];
-
-
-
-
-// Obtener todas las reservas
-export const getAllBookings = (): BookingTypeID[] => {
-  return bookings;
+export const fetchAllBookings = () => {
+    return bookings;
 };
 
-// Obtener una reserva por ID
-export const getBookingById = (id: string): BookingTypeID | null => {
-  return bookings.find(booking => booking.id === id) || null;
+export const fetchBookingById = (id: number) => {
+    return bookings.find((booking) => booking.id === id);
 };
 
-// Añadir una nueva reserva
-export const addBooking = (newBooking: BookingType): BookingTypeID => {
-  const bookingWithId: BookingTypeID = { ...newBooking, id: generateId() };
-  bookings.push(bookingWithId);
-  return bookingWithId;
+export const addBooking = (newBooking: Booking) => {
+    if (!newBooking.user_id || !newBooking.room_id || !newBooking.check_in || !newBooking.check_out || !newBooking.order_date || !newBooking.id) {
+        throw new Error('Missing required fields');
+    }
+    const specialRequest = newBooking.special_request || "";
+    const bookingWithDefaults: Booking = {
+        ...newBooking,
+        special_request: specialRequest, 
+    };
+    bookings.push(bookingWithDefaults);
+    return bookingWithDefaults;
 };
 
-// Editar una reserva existente
-export const editBooking = (id: string, updatedBooking: Partial<BookingType>): BookingTypeID | null => {
-  const index = bookings.findIndex(booking => booking.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  // Actualizar solo los campos proporcionados
-  bookings[index] = { ...bookings[index], ...updatedBooking };
-  return bookings[index];
+export const editBooking = (id: number, updatedBooking: Booking) => {
+    bookings = bookings.map((booking) =>
+        booking.id === id ? { ...booking, ...updatedBooking } : booking
+    );
+    return bookings;
 };
 
-// Eliminar una reserva
-export const deleteBooking = (id: string): boolean => {
-  const initialLength = bookings.length;
-  bookings = bookings.filter(booking => booking.id !== id);
-  return bookings.length < initialLength;
+export const removeBooking = (id: number) => {
+    bookings = bookings.filter((booking) => booking.id !== id);
+    return bookings;
 };
