@@ -16,6 +16,6 @@ export const login = (req: Request, res: Response) => {
         res.json({ token });
         return;
     }
-    res.status(401).json({ message: 'Error. Invalid name or password.'+username+'-'+password })
+    res.status(401).json({ message: 'Error. Invalid name or password.' })
     return;
 }
