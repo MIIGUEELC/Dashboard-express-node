@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 export const getHotelInfo = (req: Request, res: Response) => {
     res.json({
-        name: `Hotel Miranda`,
+        name: `Hotel Miranda miguel`,
         endpoints: {
             authentication: [
                 {
